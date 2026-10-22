@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#07090e" />
+      <stop offset="50%" stop-color="#0f1422" />
+      <stop offset="100%" stop-color="#07090e" />
+    </linearGradient>
+    <radialGradient id="pinkGlow" cx="20%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#07090e" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="amberGlow" cx="80%" cy="70%" r="50%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#07090e" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="url(#pinkGlow)" />
+  <rect width="1200" height="630" fill="url(#amberGlow)" />
+
+  <!-- Subtle Border Frame -->
+  <rect x="40" y="40" width="1120" height="550" rx="24" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2" />
+
+  <!-- Status Pill -->
+  <g transform="translate(90, 110)">
+    <rect width="230" height="40" rx="20" fill="#0d111b" stroke="rgba(244,63,94,0.4)" stroke-width="1.5" />
+    <circle cx="24" cy="20" r="5" fill="#f43f5e" />
+    <text x="40" y="25" fill="#f43f5e" font-family="monospace" font-size="13" font-weight="bold" letter-spacing="2">OPEN TO INTERNSHIPS</text>
+  </g>
+
+  <!-- Name -->
+  <text x="90" y="270" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="76" font-weight="900" letter-spacing="-1">
+    NITIN KASHYAP
+  </text>
+
+  <!-- Role Subtitle -->
+  <g transform="translate(90, 320)">
+    <text x="0" y="0" fill="#94a3b8" font-family="monospace" font-size="22" letter-spacing="4">
+      DATA ANALYST
+    </text>
+    <circle cx="210" cy="-6" r="4" fill="#f43f5e" />
+    <text x="235" y="0" fill="#94a3b8" font-family="monospace" font-size="22" letter-spacing="4">
+      AI/ML
+    </text>
+    <circle cx="340" cy="-6" r="4" fill="#f43f5e" />
+    <text x="365" y="0" fill="#94a3b8" font-family="monospace" font-size="22" letter-spacing="4">
+      KANPUR
+    </text>
+  </g>
+
+  <!-- Summary Description -->
+  <text x="90" y="400" fill="#cbd5e1" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="400">
+    Interactive 3D Desk Experience • Python • Pandas • MediaPipe • Computer Vision
+  </text>
+
+  <!-- Footer Tags -->
+  <g transform="translate(90, 480)">
+    <rect x="0" y="0" width="130" height="38" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" />
+    <text x="65" y="24" fill="#cbd5e1" font-family="monospace" font-size="14" text-anchor="middle">EXCEL</text>
+
+    <rect x="145" y="0" width="130" height="38" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" />
+    <text x="210" y="24" fill="#cbd5e1" font-family="monospace" font-size="14" text-anchor="middle">PYTHON</text>
+
+    <rect x="290" y="0" width="140" height="38" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" />
+    <text x="360" y="24" fill="#cbd5e1" font-family="monospace" font-size="14" text-anchor="middle">PANDAS</text>
+
+    <rect x="445" y="0" width="160" height="38" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" />
+    <text x="525" y="24" fill="#cbd5e1" font-family="monospace" font-size="14" text-anchor="middle">MEDIAPIPE</text>
+
+    <rect x="620" y="0" width="150" height="38" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" />
+    <text x="695" y="24" fill="#cbd5e1" font-family="monospace" font-size="14" text-anchor="middle">3D THREE.JS</text>
+  </g>
+</svg>

@@ -1,0 +1,5 @@
+# robots.txt for Nitin Kashyap Portfolio
+User-agent: *
+Allow: /
+
+Sitemap: https://nitinkashyap.dev/sitemap.xml
