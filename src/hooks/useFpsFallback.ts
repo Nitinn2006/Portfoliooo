@@ -8,14 +8,15 @@ interface FpsFallbackOptions {
 }
 
 /**
- * Runs a quick 60-frame benchmark after mount.
- * If average FPS falls below minFps (default: 25), triggers onLowFps to fall back to the 2D document view.
+ * Runs a frame benchmark after GPU warmup.
+ * Waits 4s for shader compilation / texture uploads before sampling 90 frames.
+ * If average FPS falls below minFps (default: 20), triggers onLowFps to fall back to the 2D document view.
  * Shuts off immediately after the check to prevent runtime overhead.
  */
 export function useFpsFallback({
   enabled,
-  minFps = 25,
-  sampleFrames = 60,
+  minFps = 20,
+  sampleFrames = 90,
   onLowFps,
 }: FpsFallbackOptions) {
   const onLowFpsRef = useRef(onLowFps);
@@ -51,10 +52,10 @@ export function useFpsFallback({
       animId = requestAnimationFrame(measure);
     };
 
-    // Slight delay before measuring to avoid cold-start compilation hitches
+    // 4s delay: let GPU finish shader compilation, texture uploads, and HDRI/AO warmup
     const timer = setTimeout(() => {
       animId = requestAnimationFrame(measure);
-    }, 1500);
+    }, 4000);
 
     return () => {
       clearTimeout(timer);
