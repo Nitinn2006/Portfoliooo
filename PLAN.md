@@ -14,15 +14,17 @@ An interactive 3D desk-room portfolio at night with smooth camera choreography, 
 
 ## Enhancement Steps
 
-- [x] **STEP A: Bug fixes & Pegboard upgrades** (Completed)
+- [x] **STEP A: Bug fixes, Pegboard, & Prop Viewport Polish** (Completed)
   - Bug 1: Two-way URL hash sync with `window.location.hash` (`#projects`, `#achievements`, `#about`, `#contact`, empty for overview) with full browser Back/Forward and direct-link support.
   - Bug 2: Hotspot markers and labels completely hidden whenever a panel is open (`activeSection !== 'overview'`); labels rendered at fixed screen pixels (no `distanceFactor` scaling).
-  - Bug 3: Pegboard hotspot position lowered from 3.6 to 3.2 and overview camera reframed to `[0, 3.0, 5.8]` to ensure zero clipping on all screen edges.
+  - Bug 3: Pegboard hotspot position lowered from 3.6 to 2.95 and overview camera reframed to `[0, 3.0, 5.8]` to ensure zero clipping on all screen edges.
   - Bug 4: Badge text moved to `content.ts` (`content.hud.statusBadge`) and updated to `"OPEN TO INTERNSHIPS"`.
   - Pegboard 5: Number of cards strictly equals `content.achievements.items.length` (3 cards, zero blank placeholders).
   - Pegboard 6: Procedural high-res canvas certificates with parchment paper, gold border, colored header bands, and gold seals; SIH 2026 card has a hanging ribbon and silver medal (2nd position).
   - Pegboard 7: Gentle pendulum sway (+/- 2 degrees, phase-offset per item) in `useFrame`, respecting `reducedMotion`.
   - Pegboard 8: Lit architectural wall panel behind the pegboard with emissive edge glow (`#f43f5e`) and a dedicated warm point light.
+  - Fix (Scrolling void): Collapsed offscreen `SemanticPortfolio` to `h-0 max-h-0 overflow-hidden` and locked `App.tsx` and `html, body` to `h-screen overflow-hidden` in 3D mode, completely eliminating vertical scrollbar and empty black space below the canvas.
+  - Fix (Blank props & camera framing): Added procedural 512x512 canvas textures for Monitor (IDE code & EDA bar chart), Notebook (open journal with education & skills), and Phone (lock screen with email & GitHub). Re-aimed docked camera targets so props frame in the left 40% of the screen, illuminated by dedicated local point lights and unobstructed by the right modal panel.
   - Verification: `npm run build` cleanly passed with 0 errors.
 
 - [ ] **STEP B: Avatar and laptop** (Next)

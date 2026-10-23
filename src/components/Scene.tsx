@@ -16,7 +16,7 @@ interface SceneProps {
 // Hotspot marker positions (floating above each interactive object)
 const hotspots: { position: [number, number, number]; label: string; section: NavSection }[] = [
   { position: [0, 1.85, -2.5], label: 'OPEN PROJECTS', section: 'projects' },
-  { position: [-4.5, 3.2, -3.6], label: 'OPEN ACHIEVEMENTS', section: 'achievements' },
+  { position: [-4.5, 2.95, -3.6], label: 'OPEN ACHIEVEMENTS', section: 'achievements' },
   { position: [-1.1, 1.25, -1.9], label: 'OPEN ABOUT', section: 'about' },
   { position: [0.7, 1.2, -1.7], label: 'OPEN CONTACT', section: 'contact' },
 ];

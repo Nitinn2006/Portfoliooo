@@ -105,7 +105,13 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full min-h-screen bg-[#07090e] text-slate-100 selection:bg-rose-500 selection:text-white">
+    <div
+      className={`w-full bg-[#07090e] text-slate-100 selection:bg-rose-500 selection:text-white ${
+        viewMode === '3d'
+          ? 'fixed inset-0 h-screen overflow-hidden'
+          : 'relative min-h-screen overflow-y-auto'
+      }`}
+    >
       {/* Initial Loading Screen */}
       <LoadingScreen
         progress={loadingProgress}

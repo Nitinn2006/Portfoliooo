@@ -4,13 +4,15 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { NavSection } from '../HUD';
 
-/** Camera position + lookAt target for each navigation section. */
+/** Camera position + lookAt target for each navigation section.
+ * Docked targets are offset to the right so interactive 3D props frame in the open left 40% of the screen.
+ */
 const cameraTargets: Record<NavSection, { pos: [number, number, number]; look: [number, number, number] }> = {
   overview:     { pos: [0, 3.0, 5.8],       look: [0, 1.3, 0] },
-  projects:     { pos: [0, 1.6, -0.3],      look: [0, 1.5, -2.5] },
+  projects:     { pos: [0.65, 1.45, -0.6],  look: [0.85, 1.35, -2.5] },
   achievements: { pos: [-2.2, 2.7, -1.0],   look: [-3.6, 2.5, -3.8] },
-  about:        { pos: [-1.1, 1.7, -0.2],   look: [-1.1, 0.95, -2.0] },
-  contact:      { pos: [0.7, 1.5, 0.2],     look: [0.7, 0.95, -1.7] },
+  about:        { pos: [-0.4, 1.55, -0.5],  look: [-0.3, 1.15, -2.0] },
+  contact:      { pos: [1.35, 1.45, -0.4],  look: [1.55, 1.1, -1.7] },
 };
 
 /** Starting position for the intro fly-in (high + far, looking down at room). */

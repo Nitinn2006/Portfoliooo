@@ -78,11 +78,18 @@ export const Hotspot: React.FC<HotspotProps> = ({
       <Html
         center
         position={[0, 0.32, 0]}
-        style={{ pointerEvents: 'none', whiteSpace: 'nowrap' }}
+        style={{ pointerEvents: 'auto', whiteSpace: 'nowrap' }}
       >
-        <div className="px-2.5 py-1 rounded-md bg-slate-950/90 border border-white/10 text-[11px] font-mono tracking-wider text-rose-300 backdrop-blur-sm shadow-lg select-none whitespace-nowrap pointer-events-none">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect(section);
+          }}
+          className="px-2.5 py-1 rounded-md bg-slate-950/90 border border-white/10 text-[11px] font-mono tracking-wider text-rose-300 hover:text-white hover:border-rose-500/50 backdrop-blur-sm shadow-lg select-none whitespace-nowrap cursor-pointer transition-colors"
+        >
           {label} →
-        </div>
+        </button>
       </Html>
     </group>
   );

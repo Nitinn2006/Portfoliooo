@@ -3,6 +3,11 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { content, AchievementItem } from '../../content';
 import { createCertificateTexture } from '../../utils/certificateTexture';
+import {
+  createMonitorScreenTexture,
+  createNotebookTexture,
+  createPhoneScreenTexture,
+} from '../../utils/propTextures';
 
 /**
  * Desk with emissive pink edge strip, positioned center-front of room.
@@ -63,9 +68,11 @@ export const Desk: React.FC = () => {
 
 /**
  * Monitor on a stand, centered on the desk.
- * Screen faces toward camera (positive Z).
+ * Displays a realistic dark data-science IDE and analytics dashboard (Projects target).
  */
 export const Monitor: React.FC = () => {
+  const screenTexture = useMemo(() => createMonitorScreenTexture(), []);
+
   return (
     <group position={[0, 0.88, -2.5]}>
       {/* Stand base */}
@@ -86,22 +93,20 @@ export const Monitor: React.FC = () => {
         <meshStandardMaterial color="#0a0c12" roughness={0.6} />
       </mesh>
 
-      {/* Screen (emissive display) */}
+      {/* Screen with rich IDE / data analytics dashboard texture */}
       <mesh position={[0, 0.62, 0.025]}>
         <planeGeometry args={[1.25, 0.7]} />
-        <meshBasicMaterial color="#1a2540" toneMapped={false} />
+        <meshBasicMaterial map={screenTexture} toneMapped={false} />
       </mesh>
 
-      {/* Screen glow lines (fake UI) */}
-      {[0.15, 0, -0.15].map((y, i) => (
-        <mesh key={i} position={[-0.2, 0.62 + y, 0.028]}>
-          <planeGeometry args={[0.6, 0.015]} />
-          <meshBasicMaterial
-            color={i === 0 ? '#f43f5e' : '#334155'}
-            toneMapped={false}
-          />
-        </mesh>
-      ))}
+      {/* Dedicated monitor glow light illuminating the desk surface in front */}
+      <pointLight
+        position={[0, 0.62, 0.4]}
+        intensity={2.2}
+        distance={4}
+        decay={2}
+        color="#38bdf8"
+      />
 
       {/* Small power LED */}
       <mesh position={[0, 0.26, 0.025]}>
@@ -150,8 +155,8 @@ export const DeskLamp: React.FC = () => {
       {/* Warm point light emanating from lamp */}
       <pointLight
         position={[0, 0.55, -0.05]}
-        intensity={1.8}
-        distance={4}
+        intensity={2.2}
+        distance={4.5}
         decay={2}
         color="#f59e0b"
       />
@@ -161,43 +166,47 @@ export const DeskLamp: React.FC = () => {
 
 /**
  * Notebook / journal on the desk (for About section target).
+ * Open journal displaying Nitin's education, background, and competencies.
  */
 export const Notebook: React.FC = () => {
+  const notebookTexture = useMemo(() => createNotebookTexture(), []);
+
   return (
     <group position={[-1.1, 0.88, -1.9]}>
-      {/* Notebook body */}
-      <mesh position={[0, 0.02, 0]}>
-        <boxGeometry args={[0.45, 0.04, 0.6]} />
-        <meshStandardMaterial color="#1e293b" roughness={0.8} />
+      {/* Open notebook base / cover */}
+      <mesh position={[0, 0.012, 0]}>
+        <boxGeometry args={[0.68, 0.02, 0.48]} />
+        <meshStandardMaterial color="#0f172a" roughness={0.8} />
       </mesh>
 
-      {/* Cover accent stripe */}
-      <mesh position={[0, 0.045, 0]}>
-        <boxGeometry args={[0.43, 0.005, 0.58]} />
-        <meshStandardMaterial color="#1e3a5f" roughness={0.7} />
+      {/* Open notebook pages with real profile & competencies text */}
+      <mesh position={[0, 0.025, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[0.64, 0.44]} />
+        <meshStandardMaterial
+          map={notebookTexture}
+          roughness={0.5}
+          metalness={0.05}
+        />
       </mesh>
 
-      {/* Spine */}
-      <mesh position={[-0.23, 0.02, 0]}>
-        <boxGeometry args={[0.02, 0.045, 0.6]} />
-        <meshStandardMaterial color="#0f172a" roughness={0.6} />
-      </mesh>
-
-      {/* Bookmark ribbon */}
-      <mesh position={[0.05, 0.048, 0.28]}>
-        <boxGeometry args={[0.015, 0.005, 0.08]} />
-        <meshBasicMaterial color="#f43f5e" toneMapped={false} />
-      </mesh>
+      {/* Dedicated warm light illuminating the open notebook */}
+      <pointLight
+        position={[0, 0.45, 0.1]}
+        intensity={2.2}
+        distance={3.5}
+        decay={1.8}
+        color="#fffbeb"
+      />
 
       {/* Pen beside the notebook */}
-      <mesh position={[0.3, 0.015, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.012, 0.012, 0.35, 8]} />
+      <mesh position={[0.42, 0.015, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.01, 0.01, 0.35, 8]} />
         <meshStandardMaterial color="#2a3040" metalness={0.6} roughness={0.3} />
       </mesh>
       {/* Pen tip */}
-      <mesh position={[0.3, 0.015, 0.18]} rotation={[Math.PI / 2, 0, 0]}>
-        <coneGeometry args={[0.012, 0.04, 8]} />
-        <meshStandardMaterial color="#0f172a" metalness={0.5} roughness={0.4} />
+      <mesh position={[0.42, 0.015, 0.18]} rotation={[Math.PI / 2, 0, 0]}>
+        <coneGeometry args={[0.01, 0.04, 8]} />
+        <meshStandardMaterial color="#f43f5e" metalness={0.5} roughness={0.4} />
       </mesh>
     </group>
   );
@@ -205,33 +214,33 @@ export const Notebook: React.FC = () => {
 
 /**
  * Phone on the desk (Contact section target).
+ * Displays a realistic lock-screen with direct email notification and status.
  */
 export const Phone: React.FC = () => {
+  const phoneTexture = useMemo(() => createPhoneScreenTexture(), []);
+
   return (
     <group position={[0.7, 0.88, -1.7]}>
       {/* Phone body */}
       <mesh position={[0, 0.015, 0]}>
-        <boxGeometry args={[0.15, 0.02, 0.3]} />
+        <boxGeometry args={[0.22, 0.02, 0.38]} />
         <meshStandardMaterial color="#0f1219" roughness={0.3} metalness={0.5} />
       </mesh>
 
-      {/* Screen (emissive) */}
-      <mesh position={[0, 0.028, 0]}>
-        <planeGeometry args={[0.12, 0.24]} />
-        <meshBasicMaterial color="#0f1729" toneMapped={false} />
+      {/* Phone screen with lock-screen, clock, and contact notification */}
+      <mesh position={[0, 0.028, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[0.2, 0.35]} />
+        <meshBasicMaterial map={phoneTexture} toneMapped={false} />
       </mesh>
 
-      {/* Screen notification dot */}
-      <mesh position={[0, 0.029, 0.05]}>
-        <circleGeometry args={[0.008, 12]} />
-        <meshBasicMaterial color="#f43f5e" toneMapped={false} />
-      </mesh>
-
-      {/* Time display bar */}
-      <mesh position={[0, 0.029, 0.08]}>
-        <planeGeometry args={[0.06, 0.008]} />
-        <meshBasicMaterial color="#94a3b8" toneMapped={false} />
-      </mesh>
+      {/* Dedicated point light illuminating the phone */}
+      <pointLight
+        position={[0, 0.35, 0]}
+        intensity={2.0}
+        distance={3}
+        decay={1.8}
+        color="#93c5fd"
+      />
     </group>
   );
 };

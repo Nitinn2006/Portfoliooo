@@ -19,10 +19,10 @@ export const SemanticPortfolio: React.FC<SemanticPortfolioProps> = ({
       id="semantic-content"
       tabIndex={-1}
       aria-label="Portfolio document view"
-      className={`w-full min-h-screen transition-opacity duration-300 ${
+      className={`transition-opacity duration-300 ${
         isVisibleInViewport
-          ? 'relative z-20 bg-[#080a0f] text-slate-100 overflow-y-auto'
-          : 'absolute top-0 left-0 -z-10 opacity-0 pointer-events-none'
+          ? 'relative z-20 bg-[#080a0f] text-slate-100 overflow-y-auto min-h-screen w-full'
+          : 'absolute top-0 left-0 w-full h-0 max-h-0 overflow-hidden opacity-0 pointer-events-none -z-50'
       }`}
     >
       {/* 2D Header & Nav */}

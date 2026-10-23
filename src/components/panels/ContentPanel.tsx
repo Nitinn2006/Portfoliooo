@@ -11,7 +11,7 @@ interface ContentPanelProps {
 }
 
 /** Delay (ms) after camera starts flying before the panel fades in. */
-const PANEL_DELAY = 900;
+const PANEL_DELAY = 400;
 
 const sectionComponent: Record<string, React.FC<{ variant: 'modal' }>> = {
   projects: ProjectsSection,
