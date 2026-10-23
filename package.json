@@ -2,6 +2,7 @@
   "name": "nitin-kashyap-portfolio",
   "private": true,
   "version": "1.0.0",
+  "homepage": "https://nitinn2006.github.io/Portfoliooo/",
   "type": "module",
   "scripts": {
     "dev": "vite",

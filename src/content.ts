@@ -198,7 +198,7 @@ export const content: PortfolioContent = {
     email: 'nk3320427@gmail.com',
     githubUrl: 'https://github.com/Nitinn2006',
     linkedinUrl: '', // Left empty as requested: button will be cleanly hidden with no '#' link
-    cvPath: '/Nitin_Kashyap_CV.pdf',
+    cvPath: './Nitin_Kashyap_CV.pdf',
     cvButtonLabel: 'Download CV',
   },
 };

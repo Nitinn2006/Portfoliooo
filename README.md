@@ -1,5 +1,10 @@
 # Nitin Kashyap — Interactive 3D Portfolio
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-nitinn2006.github.io%2FPortfoliooo-rose?style=for-the-badge&logo=github)](https://nitinn2006.github.io/Portfoliooo/)
+[![GitHub Pages](https://img.shields.io/badge/Deployment-GitHub_Pages-22c55e?style=for-the-badge&logo=githubactions)](https://nitinn2006.github.io/Portfoliooo/)
+
+> 🌐 **Live Website**: [https://nitinn2006.github.io/Portfoliooo/](https://nitinn2006.github.io/Portfoliooo/)
+
 An interactive 3D developer portfolio and workstation experience built with **React 19**, **Three.js / React Three Fiber**, **TypeScript**, and **Tailwind CSS**.
 
 Featuring a night-time desk environment where each interactive object corresponds to a portfolio section:
