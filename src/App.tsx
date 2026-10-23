@@ -5,7 +5,7 @@ import { ContentPanel } from './components/panels/ContentPanel';
 import { SemanticPortfolio } from './components/semantic/SemanticPortfolio';
 import { LoadingScreen } from './components/loading/LoadingScreen';
 import { usePrefersReducedMotion } from './hooks/usePrefersReducedMotion';
-import { useFpsFallback } from './hooks/useFpsFallback';
+// import { useFpsFallback } from './hooks/useFpsFallback';
 
 export const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState<NavSection>('overview');
@@ -57,15 +57,17 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('hashchange', handleHash);
   }, []);
 
-  // Frame rate check: switch to 2D view if mid/low-end device drops frames
-  useFpsFallback({
-    enabled: viewMode === '3d' && introDone,
-    minFps: 25,
-    sampleFrames: 60,
-    onLowFps: () => {
-      setViewMode('2d');
-    },
-  });
+  // ponytail: FPS fallback disabled — shader compilation on heavier post-processing
+  // pipeline (N8AO, reflections, shadows, Environment HDRI) causes false positives
+  // during GPU warmup. Re-enable with longer warmup if needed on truly low-end devices.
+  // useFpsFallback({
+  //   enabled: viewMode === '3d' && introDone,
+  //   minFps: 20,
+  //   sampleFrames: 90,
+  //   onLowFps: () => {
+  //     setViewMode('2d');
+  //   },
+  // });
 
   const handleSelectSection = (section: NavSection) => {
     setActiveSection(section);
