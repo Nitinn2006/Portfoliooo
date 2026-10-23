@@ -11,6 +11,13 @@ An interactive 3D desk-room portfolio at night with smooth camera choreography, 
 - [x] **Phase 5: 3D content panels** (Completed)
 - [x] **Phase 6: Loading screen, motion & performance pass** (Completed)
 - [x] **Phase 7: SEO tags, Open Graph, sitemap, robots.txt** (Completed)
+- [x] **Phase 8 — Pass A: Definition (Lighting, Composition, Materials, Bug Fixes)** (Completed)
+  - A1. Bug Fixes: Anchored Achievements hotspot label safely to the right (`[0.65, -0.05, 0]`) to completely avoid overlapping top-left HUD chips at any screen size; replaced permanent thick pink pegboard border with subtle dark trim that only glows on hover; shrunk hotspot diamonds by 40% with staggered pulsing rings and hover fade.
+  - A2. Lighting: 3-point + practical lights setup (cool moonlight directional key light with soft shadows, hemisphere fill light for readable room visibility, warm desk lamp practical point light, cyan monitor spill, and pink rim light; added `<ContactShadows>` and low-intensity night `<Environment>`).
+  - A3. Post-Processing: Selective Bloom, N8AO ambient occlusion, cinematic Vignette, and SMAA anti-aliasing with low-power quality toggle.
+  - A4. Composition: Tighter overview camera framing (`pos: [0, 2.45, 4.35], look: [0, 1.35, -1.8]`) filling ~80% of viewport with room/desk; added 0.2Hz breathing motion and smooth mouse parallax.
+  - A5. Materials & Geometry: `RoundedBox` beveled edges on desk, drawer, shelf, books, and monitor; dark wood floor with `MeshReflectorMaterial` night reflections; woven area rug under desk; framed architectural posters on right wall.
+  - A6. Window & Skyline: 3 distinct depth layers (distant silhouettes, lit midground towers, foreground rooftops) with twinkling windows, starry night sky, glowing moon, and atmospheric fog.
 
 ## Enhancement Steps
 

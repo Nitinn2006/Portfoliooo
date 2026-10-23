@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Html } from '@react-three/drei';
@@ -10,13 +10,15 @@ interface HotspotProps {
   section: NavSection;
   visible: boolean;
   onSelect: (section: NavSection) => void;
+  index?: number;
+  labelOffset?: [number, number, number];
 }
 
 /**
- * Floating pink diamond marker above interactive objects.
- * Gently bobs up/down and pulses.
- * Hidden while a panel is open.
- * Label tooltip is sized in fixed screen pixels (no distanceFactor scaling).
+ * Refined floating pink diamond marker above interactive objects.
+ * - 40% smaller octahedron
+ * - Expanding soft pulse ring (scale 1 -> 1.6, opacity 0.6 -> 0, 2s loop staggered per hotspot)
+ * - Label tooltip fades in smoothly on hover or idle focus with collision-safe offset
  */
 export const Hotspot: React.FC<HotspotProps> = ({
   position,
@@ -24,23 +26,31 @@ export const Hotspot: React.FC<HotspotProps> = ({
   section,
   visible,
   onSelect,
+  index = 0,
+  labelOffset = [0, 0.28, 0],
 }) => {
   const groupRef = useRef<THREE.Group>(null);
-  const glowRef = useRef<THREE.Mesh>(null);
+  const ringRef = useRef<THREE.Mesh>(null);
+  const ringMatRef = useRef<THREE.MeshBasicMaterial>(null);
+  const [hovered, setHovered] = useState(false);
 
   useFrame((state) => {
     if (!visible) return;
     const t = state.clock.getElapsedTime();
+
     if (groupRef.current) {
-      // Gentle bob
-      groupRef.current.position.y = position[1] + Math.sin(t * 2 + position[0]) * 0.08;
-      // Slow rotation
-      groupRef.current.rotation.y = t * 0.8;
+      // Gentle bobbing motion
+      groupRef.current.position.y = position[1] + Math.sin(t * 2 + position[0]) * 0.05;
+      groupRef.current.rotation.y = t * 0.75;
     }
-    if (glowRef.current) {
-      // Pulse scale
-      const pulse = 1 + Math.sin(t * 3 + position[0] * 2) * 0.15;
-      glowRef.current.scale.setScalar(pulse);
+
+    if (ringRef.current && ringMatRef.current) {
+      // 2s pulse loop staggered per hotspot index
+      const progress = ((t * 0.5 + index * 0.25) % 1);
+      const scale = 1.0 + progress * 0.65;
+      const opacity = (1.0 - progress) * 0.6;
+      ringRef.current.scale.set(scale, scale, 1);
+      ringMatRef.current.opacity = opacity;
     }
   });
 
@@ -56,28 +66,37 @@ export const Hotspot: React.FC<HotspotProps> = ({
       }}
       onPointerOver={(e) => {
         e.stopPropagation();
+        setHovered(true);
         document.body.style.cursor = 'pointer';
       }}
       onPointerOut={() => {
+        setHovered(false);
         document.body.style.cursor = 'default';
       }}
     >
-      {/* Diamond shape: octahedron */}
-      <mesh>
-        <octahedronGeometry args={[0.12, 0]} />
+      {/* 40% smaller diamond: octahedron radius 0.07 */}
+      <mesh scale={hovered ? 1.2 : 1.0}>
+        <octahedronGeometry args={[0.07, 0]} />
         <meshBasicMaterial color="#f43f5e" toneMapped={false} />
       </mesh>
 
-      {/* Outer glow sphere */}
-      <mesh ref={glowRef}>
-        <sphereGeometry args={[0.2, 16, 16]} />
-        <meshBasicMaterial color="#f43f5e" transparent opacity={0.15} toneMapped={false} />
+      {/* Pulsing expand ring (facing camera) */}
+      <mesh ref={ringRef} rotation={[-0.4, 0, 0]}>
+        <ringGeometry args={[0.08, 0.1, 24]} />
+        <meshBasicMaterial
+          ref={ringMatRef}
+          color="#f43f5e"
+          transparent
+          opacity={0.5}
+          side={THREE.DoubleSide}
+          toneMapped={false}
+        />
       </mesh>
 
-      {/* Tooltip label via Html overlay: NO distanceFactor so it stays fixed screen pixels */}
+      {/* Tooltip label via Html overlay with collision-safe offset */}
       <Html
         center
-        position={[0, 0.32, 0]}
+        position={labelOffset}
         style={{ pointerEvents: 'auto', whiteSpace: 'nowrap' }}
       >
         <button
@@ -86,7 +105,13 @@ export const Hotspot: React.FC<HotspotProps> = ({
             e.stopPropagation();
             onSelect(section);
           }}
-          className="px-2.5 py-1 rounded-md bg-slate-950/90 border border-white/10 text-[11px] font-mono tracking-wider text-rose-300 hover:text-white hover:border-rose-500/50 backdrop-blur-sm shadow-lg select-none whitespace-nowrap cursor-pointer transition-colors"
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          className={`px-2.5 py-1 rounded-md border font-mono tracking-wider text-[11px] backdrop-blur-md shadow-lg select-none whitespace-nowrap cursor-pointer transition-all duration-300 ${
+            hovered
+              ? 'opacity-100 translate-y-0 scale-105 bg-slate-950/95 border-rose-500/60 text-white shadow-[0_0_15px_rgba(244,63,94,0.4)]'
+              : 'opacity-70 bg-slate-950/80 border-white/10 text-rose-300 hover:opacity-100'
+          }`}
         >
           {label} →
         </button>

@@ -8,7 +8,7 @@ import { NavSection } from '../HUD';
  * Docked targets are offset to the right so interactive 3D props frame in the open left 40% of the screen.
  */
 const cameraTargets: Record<NavSection, { pos: [number, number, number]; look: [number, number, number] }> = {
-  overview:     { pos: [0, 3.0, 5.8],       look: [0, 1.3, 0] },
+  overview:     { pos: [0, 2.45, 4.35],     look: [0, 1.35, -1.8] },
   projects:     { pos: [0.65, 1.45, -0.6],  look: [0.85, 1.35, -2.5] },
   achievements: { pos: [-2.2, 2.7, -1.0],   look: [-3.6, 2.5, -3.8] },
   about:        { pos: [-0.4, 1.55, -0.5],  look: [-0.3, 1.15, -2.0] },
@@ -169,11 +169,14 @@ export const CameraController: React.FC<CameraControllerProps> = ({
         camera.lookAt(currentLookAt.current);
       } else {
         const t = state.clock.getElapsedTime();
-        const driftX = Math.sin(t * 0.45) * 0.08;
-        const driftY = Math.cos(t * 0.35) * 0.05;
+        // Subtle 0.2 Hz breathing motion (+/- 0.025m) and gentle drift
+        const breathe = Math.sin(t * 1.25) * 0.025;
+        const driftX = Math.sin(t * 0.45) * 0.06;
+        const driftY = Math.cos(t * 0.35) * 0.04;
 
-        const goalX = target.pos[0] + state.pointer.x * 0.4 + driftX;
-        const goalY = target.pos[1] + state.pointer.y * 0.25 + driftY;
+        // Mouse parallax capped at +/- 3 degrees
+        const goalX = target.pos[0] + state.pointer.x * 0.22 + driftX;
+        const goalY = target.pos[1] + state.pointer.y * 0.14 + driftY + breathe;
         const goalZ = target.pos[2];
 
         const f = Math.min(delta * 2.5, 0.1);
@@ -183,12 +186,12 @@ export const CameraController: React.FC<CameraControllerProps> = ({
 
         currentLookAt.current.x = THREE.MathUtils.lerp(
           currentLookAt.current.x,
-          target.look[0] + state.pointer.x * 0.15,
+          target.look[0] + state.pointer.x * 0.12,
           f,
         );
         currentLookAt.current.y = THREE.MathUtils.lerp(
           currentLookAt.current.y,
-          target.look[1] + state.pointer.y * 0.1,
+          target.look[1] + state.pointer.y * 0.08,
           f,
         );
         currentLookAt.current.z = THREE.MathUtils.lerp(currentLookAt.current.z, target.look[2], f);

@@ -1,6 +1,7 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { RoundedBox } from '@react-three/drei';
 import { content, AchievementItem } from '../../content';
 import { createCertificateTexture } from '../../utils/certificateTexture';
 import {
@@ -11,16 +12,20 @@ import {
 
 /**
  * Desk with emissive pink edge strip, positioned center-front of room.
- * Desktop surface at y ~= 0.85
+ * Desktop surface at y ~= 0.85 with beveled edges.
  */
 export const Desk: React.FC = () => {
   return (
     <group position={[0, 0, -2.2]}>
-      {/* Desktop Surface */}
-      <mesh position={[0, 0.85, 0]}>
-        <boxGeometry args={[3.2, 0.06, 1.2]} />
-        <meshStandardMaterial color="#1a1e28" roughness={0.5} metalness={0.3} />
-      </mesh>
+      {/* Desktop Surface with beveled edges */}
+      <RoundedBox
+        args={[3.2, 0.06, 1.2]}
+        radius={0.015}
+        smoothness={4}
+        position={[0, 0.85, 0]}
+      >
+        <meshStandardMaterial color="#1a1e28" roughness={0.55} metalness={0.15} />
+      </RoundedBox>
 
       {/* Front edge pink accent strip (emissive) */}
       <mesh position={[0, 0.84, 0.59]}>
@@ -52,16 +57,24 @@ export const Desk: React.FC = () => {
         <meshStandardMaterial color="#0e111a" roughness={0.8} />
       </mesh>
 
-      {/* Drawer block right side */}
-      <mesh position={[1.0, 0.42, 0.05]}>
-        <boxGeometry args={[0.85, 0.6, 0.9]} />
+      {/* Drawer block right side with beveled edges */}
+      <RoundedBox
+        args={[0.85, 0.6, 0.9]}
+        radius={0.02}
+        smoothness={4}
+        position={[1.0, 0.42, 0.05]}
+      >
         <meshStandardMaterial color="#14171f" roughness={0.7} />
-      </mesh>
+      </RoundedBox>
       {/* Drawer handle */}
-      <mesh position={[1.0, 0.48, 0.52]}>
-        <boxGeometry args={[0.3, 0.03, 0.03]} />
+      <RoundedBox
+        args={[0.3, 0.03, 0.03]}
+        radius={0.008}
+        smoothness={4}
+        position={[1.0, 0.48, 0.52]}
+      >
         <meshStandardMaterial color="#2a3040" metalness={0.5} roughness={0.3} />
-      </mesh>
+      </RoundedBox>
     </group>
   );
 };
@@ -87,11 +100,15 @@ export const Monitor: React.FC = () => {
         <meshStandardMaterial color="#101420" metalness={0.6} roughness={0.4} />
       </mesh>
 
-      {/* Screen bezel */}
-      <mesh position={[0, 0.62, 0]}>
-        <boxGeometry args={[1.35, 0.8, 0.04]} />
+      {/* Screen bezel with beveled edges */}
+      <RoundedBox
+        args={[1.35, 0.8, 0.04]}
+        radius={0.012}
+        smoothness={4}
+        position={[0, 0.62, 0]}
+      >
         <meshStandardMaterial color="#0a0c12" roughness={0.6} />
-      </mesh>
+      </RoundedBox>
 
       {/* Screen with rich IDE / data analytics dashboard texture */}
       <mesh position={[0, 0.62, 0.025]}>
@@ -459,6 +476,7 @@ const HangingCertificate: React.FC<HangingCertificateProps> = ({
  * Pegboard mounted on the left wall with illuminated accent wall panel and 3 hanging certificate cards.
  */
 export const Pegboard: React.FC<{ reducedMotion?: boolean }> = ({ reducedMotion }) => {
+  const [hovered, setHovered] = useState(false);
   const items = content.achievements.items; // Exactly 3 items
 
   // 3 card horizontal layout slots
@@ -469,30 +487,56 @@ export const Pegboard: React.FC<{ reducedMotion?: boolean }> = ({ reducedMotion 
   ];
 
   return (
-    <group position={[-4.5, 2.6, -3.8]}>
-      {/* 8. Lit wall behind the pegboard with an emissive edge glow */}
-      {/* Dedicated accent wall panel behind the pegboard */}
+    <group
+      position={[-4.5, 2.6, -3.8]}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        setHovered(true);
+      }}
+      onPointerOut={() => setHovered(false)}
+    >
+      {/* 8. Architectural wall panel behind the pegboard */}
       <mesh position={[0, 0, -0.06]}>
         <boxGeometry args={[2.3, 1.6, 0.04]} />
         <meshStandardMaterial color="#111520" roughness={0.85} />
       </mesh>
 
-      {/* Emissive Edge Glow surrounding the wall panel */}
-      <mesh position={[0, 0.81, -0.04]}>
-        <boxGeometry args={[2.34, 0.02, 0.02]} />
-        <meshBasicMaterial color="#f43f5e" toneMapped={false} />
+      {/* Thin glowing edge appears ONLY on hover/focus (never a permanent thick debug outline) */}
+      <mesh position={[0, 0.805, -0.038]}>
+        <boxGeometry args={[2.32, 0.01, 0.01]} />
+        <meshBasicMaterial
+          color={hovered ? '#f43f5e' : '#1e2436'}
+          transparent
+          opacity={hovered ? 0.9 : 0.3}
+          toneMapped={false}
+        />
       </mesh>
-      <mesh position={[0, -0.81, -0.04]}>
-        <boxGeometry args={[2.34, 0.02, 0.02]} />
-        <meshBasicMaterial color="#f43f5e" toneMapped={false} />
+      <mesh position={[0, -0.805, -0.038]}>
+        <boxGeometry args={[2.32, 0.01, 0.01]} />
+        <meshBasicMaterial
+          color={hovered ? '#f43f5e' : '#1e2436'}
+          transparent
+          opacity={hovered ? 0.9 : 0.3}
+          toneMapped={false}
+        />
       </mesh>
-      <mesh position={[-1.16, 0, -0.04]}>
-        <boxGeometry args={[0.02, 1.62, 0.02]} />
-        <meshBasicMaterial color="#f43f5e" toneMapped={false} />
+      <mesh position={[-1.155, 0, -0.038]}>
+        <boxGeometry args={[0.01, 1.61, 0.01]} />
+        <meshBasicMaterial
+          color={hovered ? '#f43f5e' : '#1e2436'}
+          transparent
+          opacity={hovered ? 0.9 : 0.3}
+          toneMapped={false}
+        />
       </mesh>
-      <mesh position={[1.16, 0, -0.04]}>
-        <boxGeometry args={[0.02, 1.62, 0.02]} />
-        <meshBasicMaterial color="#f43f5e" toneMapped={false} />
+      <mesh position={[1.155, 0, -0.038]}>
+        <boxGeometry args={[0.01, 1.61, 0.01]} />
+        <meshBasicMaterial
+          color={hovered ? '#f43f5e' : '#1e2436'}
+          transparent
+          opacity={hovered ? 0.9 : 0.3}
+          toneMapped={false}
+        />
       </mesh>
 
       {/* Dedicated warm point light illuminating the pegboard and wall */}
@@ -568,51 +612,44 @@ export const Bookshelf: React.FC = () => {
 
   return (
     <group position={[-2.5, 0, -3.2]}>
-      {/* Shelf frame sides */}
-      <mesh position={[-0.35, 0.65, 0]}>
-        <boxGeometry args={[0.04, 1.3, 0.4]} />
+      {/* Shelf frame sides with subtle bevel */}
+      <RoundedBox args={[0.04, 1.3, 0.4]} radius={0.008} smoothness={4} position={[-0.35, 0.65, 0]}>
         <meshStandardMaterial color="#14171f" roughness={0.7} />
-      </mesh>
-      <mesh position={[0.35, 0.65, 0]}>
-        <boxGeometry args={[0.04, 1.3, 0.4]} />
+      </RoundedBox>
+      <RoundedBox args={[0.04, 1.3, 0.4]} radius={0.008} smoothness={4} position={[0.35, 0.65, 0]}>
         <meshStandardMaterial color="#14171f" roughness={0.7} />
-      </mesh>
+      </RoundedBox>
 
       {/* Shelves (3 levels) */}
       {[0.0, 0.44, 0.88].map((y, i) => (
-        <mesh key={i} position={[0, y, 0]}>
-          <boxGeometry args={[0.72, 0.03, 0.4]} />
+        <RoundedBox key={i} args={[0.72, 0.03, 0.4]} radius={0.006} smoothness={4} position={[0, y, 0]}>
           <meshStandardMaterial color="#14171f" roughness={0.7} />
-        </mesh>
+        </RoundedBox>
       ))}
 
       {/* Top shelf */}
-      <mesh position={[0, 1.3, 0]}>
-        <boxGeometry args={[0.72, 0.03, 0.4]} />
+      <RoundedBox args={[0.72, 0.03, 0.4]} radius={0.006} smoothness={4} position={[0, 1.3, 0]}>
         <meshStandardMaterial color="#14171f" roughness={0.7} />
-      </mesh>
+      </RoundedBox>
 
-      {/* Books on bottom shelf */}
+      {/* Books on bottom shelf with rounded edges */}
       {bookColors.slice(0, 4).map((color, i) => (
-        <mesh key={i} position={[-0.2 + i * 0.13, 0.2, 0]}>
-          <boxGeometry args={[0.08, 0.36, 0.28]} />
-          <meshStandardMaterial color={color} roughness={0.8} />
-        </mesh>
+        <RoundedBox key={i} args={[0.08, 0.36, 0.28]} radius={0.008} smoothness={4} position={[-0.2 + i * 0.13, 0.2, 0]}>
+          <meshStandardMaterial color={color} roughness={0.75} />
+        </RoundedBox>
       ))}
 
       {/* Books on middle shelf */}
       {bookColors.slice(1, 4).map((color, i) => (
-        <mesh key={i} position={[-0.15 + i * 0.15, 0.64, 0]}>
-          <boxGeometry args={[0.1, 0.34, 0.26]} />
-          <meshStandardMaterial color={color} roughness={0.8} />
-        </mesh>
+        <RoundedBox key={i} args={[0.1, 0.34, 0.26]} radius={0.008} smoothness={4} position={[-0.15 + i * 0.15, 0.64, 0]}>
+          <meshStandardMaterial color={color} roughness={0.75} />
+        </RoundedBox>
       ))}
 
       {/* Small item on top shelf */}
-      <mesh position={[0, 1.0, 0]}>
-        <boxGeometry args={[0.2, 0.16, 0.15]} />
+      <RoundedBox args={[0.2, 0.16, 0.15]} radius={0.01} smoothness={4} position={[0, 1.0, 0]}>
         <meshStandardMaterial color="#1a202c" roughness={0.6} />
-      </mesh>
+      </RoundedBox>
     </group>
   );
 };
