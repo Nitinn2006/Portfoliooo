@@ -68,7 +68,7 @@ export const ContentPanel: React.FC<ContentPanelProps> = ({ activeSection, onClo
       <div
         role="dialog"
         aria-label={`${activeSection} details`}
-        className={`pointer-events-auto relative w-full max-w-xl lg:max-w-2xl h-[85vh] mr-4 sm:mr-6 lg:mr-10 rounded-2xl overflow-hidden transition-all duration-500 ease-out ${
+        className={`pointer-events-auto relative w-full max-w-xl lg:max-w-2xl h-[85vh] mr-4 sm:mr-6 lg:mr-10 rounded-2xl overflow-hidden transition-all duration-600 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           visible ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'
         }`}
       >

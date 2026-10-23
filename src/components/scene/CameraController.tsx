@@ -99,7 +99,7 @@ export const CameraController: React.FC<CameraControllerProps> = ({
     prevSection.current = activeSection;
 
     const target = cameraTargets[activeSection];
-    const dur = reducedMotion ? 0 : 1.2;
+    const dur = reducedMotion ? 0 : 1.4;
 
     // Kill any in-flight tweens
     gsap.killTweensOf(camera.position);
@@ -122,11 +122,16 @@ export const CameraController: React.FC<CameraControllerProps> = ({
       y: target.pos[1],
       z: target.pos[2],
       duration: dur,
-      ease: 'power3.inOut',
+      ease: 'power2.inOut',
       onUpdate: () => {
         camera.lookAt(lookAtProxy.current.x, lookAtProxy.current.y, lookAtProxy.current.z);
       },
       onComplete: () => {
+        lookAtProxy.current.x = target.look[0];
+        lookAtProxy.current.y = target.look[1];
+        lookAtProxy.current.z = target.look[2];
+        currentLookAt.current.set(...target.look);
+        camera.lookAt(currentLookAt.current);
         isTweening.current = false;
       },
     });
@@ -136,7 +141,7 @@ export const CameraController: React.FC<CameraControllerProps> = ({
       y: target.look[1],
       z: target.look[2],
       duration: dur,
-      ease: 'power3.inOut',
+      ease: 'power2.inOut',
     });
   }, [activeSection, camera, reducedMotion]);
 
@@ -179,7 +184,8 @@ export const CameraController: React.FC<CameraControllerProps> = ({
         const goalY = target.pos[1] + state.pointer.y * 0.14 + driftY + breathe;
         const goalZ = target.pos[2];
 
-        const f = Math.min(delta * 2.5, 0.1);
+        // Frame-rate independent exponential smoothing
+        const f = 1 - Math.exp(-4.5 * Math.min(delta, 0.1));
         camera.position.x = THREE.MathUtils.lerp(camera.position.x, goalX, f);
         camera.position.y = THREE.MathUtils.lerp(camera.position.y, goalY, f);
         camera.position.z = THREE.MathUtils.lerp(camera.position.z, goalZ, f);

@@ -5,11 +5,16 @@ import { ContentPanel } from './components/panels/ContentPanel';
 import { SemanticPortfolio } from './components/semantic/SemanticPortfolio';
 import { LoadingScreen } from './components/loading/LoadingScreen';
 import { usePrefersReducedMotion } from './hooks/usePrefersReducedMotion';
-// import { useFpsFallback } from './hooks/useFpsFallback';
 
 export const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState<NavSection>('overview');
-  const [viewMode, setViewMode] = useState<'3d' | '2d'>('3d');
+  // Initialize viewMode accurately at startup: mobile (<768px) starts in 2D, desktop in 3D
+  const [viewMode, setViewMode] = useState<'3d' | '2d'>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768 ? '2d' : '3d';
+    }
+    return '3d';
+  });
   const [loadingProgress, setLoadingProgress] = useState(0.2);
   const [introDone, setIntroDone] = useState(false);
 
@@ -25,20 +30,31 @@ export const App: React.FC = () => {
     };
   }, []);
 
-  // Detect mobile viewports (< 768px) and default to 2D view for performance and readability
+  // Window resize check
   useEffect(() => {
     const checkViewport = () => {
       const isMobile = window.innerWidth < 768;
-      if (isMobile) {
+      if (isMobile && viewMode !== '2d') {
         setViewMode('2d');
         setIntroDone(true);
       }
     };
 
-    checkViewport();
     window.addEventListener('resize', checkViewport);
     return () => window.removeEventListener('resize', checkViewport);
-  }, []);
+  }, [viewMode]);
+
+  // Sync body scroll capability: 3D mode locks viewport to 100vh, 2D mode allows smooth natural scrolling
+  useEffect(() => {
+    if (viewMode === '3d') {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [viewMode]);
 
   // Sync URL hash with active section and support browser Back/Forward & direct links
   useEffect(() => {
@@ -56,18 +72,6 @@ export const App: React.FC = () => {
     window.addEventListener('hashchange', handleHash);
     return () => window.removeEventListener('hashchange', handleHash);
   }, []);
-
-  // ponytail: FPS fallback disabled — shader compilation on heavier post-processing
-  // pipeline (N8AO, reflections, shadows, Environment HDRI) causes false positives
-  // during GPU warmup. Re-enable with longer warmup if needed on truly low-end devices.
-  // useFpsFallback({
-  //   enabled: viewMode === '3d' && introDone,
-  //   minFps: 20,
-  //   sampleFrames: 90,
-  //   onLowFps: () => {
-  //     setViewMode('2d');
-  //   },
-  // });
 
   const handleSelectSection = (section: NavSection) => {
     setActiveSection(section);
@@ -100,56 +104,61 @@ export const App: React.FC = () => {
     setViewMode(nextMode);
     if (nextMode === '3d') {
       setActiveSection('overview');
-    }
-    if (nextMode === '2d') {
+    } else {
       window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
     }
   };
 
   return (
-    <div
-      className={`w-full bg-[#07090e] text-slate-100 selection:bg-rose-500 selection:text-white ${
-        viewMode === '3d'
-          ? 'fixed inset-0 h-screen overflow-hidden'
-          : 'relative min-h-screen overflow-y-auto'
-      }`}
-    >
-      {/* Initial Loading Screen */}
+    <div className="relative w-full min-h-screen bg-[#07090e] text-slate-100 selection:bg-rose-500 selection:text-white">
+      {/* Initial Loading Screen with smooth fade out */}
       <LoadingScreen
         progress={loadingProgress}
-        done={introDone}
+        done={introDone || viewMode === '2d'}
       />
 
-      {/* 3D Scene Layer (active in 3D mode) */}
-      {viewMode === '3d' && (
-        <>
-          <Scene
-            activeSection={activeSection}
-            onSelectSection={handleSelectSection}
-            reducedMotion={reducedMotion}
-            onIntroComplete={() => setIntroDone(true)}
-          />
+      {/* 3D Scene Layer with silky cross-fade (stays mounted to prevent WebGL context loss) */}
+      <div
+        className={`fixed inset-0 transition-opacity duration-500 ease-in-out ${
+          viewMode === '3d'
+            ? 'opacity-100 z-10 pointer-events-auto'
+            : 'opacity-0 z-0 pointer-events-none'
+        }`}
+      >
+        <Scene
+          activeSection={activeSection}
+          onSelectSection={handleSelectSection}
+          reducedMotion={reducedMotion}
+          onIntroComplete={() => setIntroDone(true)}
+        />
 
-          {/* Glassmorphic content panels over the 3D scene */}
-          <ContentPanel
-            activeSection={activeSection}
-            onClose={() => handleSelectSection('overview')}
-          />
+        {/* Glassmorphic content panels over the 3D scene */}
+        <ContentPanel
+          activeSection={activeSection}
+          onClose={() => handleSelectSection('overview')}
+        />
 
-          <HUD
-            activeSection={activeSection}
-            onSelectSection={handleSelectSection}
-            viewMode={viewMode}
-            onToggleViewMode={handleToggleViewMode}
-          />
-        </>
-      )}
+        <HUD
+          activeSection={activeSection}
+          onSelectSection={handleSelectSection}
+          viewMode={viewMode}
+          onToggleViewMode={handleToggleViewMode}
+        />
+      </div>
 
-      {/* Semantic 2D HTML Content Layer: Always preserved in DOM, never display:none */}
-      <SemanticPortfolio
-        isVisibleInViewport={viewMode === '2d'}
-        onSwitchTo3D={() => setViewMode('3d')}
-      />
+      {/* Semantic 2D HTML Content Layer with smooth opacity cross-fade */}
+      <div
+        className={`transition-opacity duration-500 ease-in-out ${
+          viewMode === '2d'
+            ? 'relative z-20 opacity-100 pointer-events-auto min-h-screen'
+            : 'fixed top-0 left-0 w-full h-0 max-h-0 overflow-hidden opacity-0 pointer-events-none -z-50'
+        }`}
+      >
+        <SemanticPortfolio
+          isVisibleInViewport={viewMode === '2d'}
+          onSwitchTo3D={() => handleToggleViewMode()}
+        />
+      </div>
     </div>
   );
 };
